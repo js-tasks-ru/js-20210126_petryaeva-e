@@ -16,9 +16,3 @@ export function sortStrings(arr, param = 'asc') {
 
     return arr.slice().sort((a, b) => compare(a, b));
 }
-
-console.log(sortStrings(['абрикос', 'Абрикос', 'яблоко', 'Яблоко', 'ёжик', 'Ёжик']));
-
-console.log(sortStrings(['apple', 'Apple', 'banana', 'Banana', 'orange', 'Orange']));
-
-console.log(sortStrings(['5', '3', '4', '1', '2', '6']));
