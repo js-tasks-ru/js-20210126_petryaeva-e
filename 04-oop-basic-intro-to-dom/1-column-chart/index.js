@@ -13,10 +13,7 @@ export default class ColumnChart {
         return `
             <div class="column-chart__title">
                 Total ${label}
-                ${!!link
-                    ? `<a href="/${link}" class="column-chart__link">View all</a>`
-                    : ''
-                }
+                ${link ? `<a href="/${link}" class="column-chart__link">View all</a>` : ''}
             </div>
         `;
     }
@@ -45,11 +42,11 @@ export default class ColumnChart {
 
     render() {
         const {data, label, link, value, chartHeight} = this;
-        const classes = !data.length ? 'column-chart_loading' : '';
+        const loadingClass = data.length ? '' : 'column-chart_loading';
         const element = document.createElement('div');
 
         element.innerHTML = `
-            <div class="column-chart ${classes}" style="--chart-height: ${chartHeight}">
+            <div class="column-chart ${loadingClass}" style="--chart-height: ${chartHeight}">
                 ${this.getTitle(label, link)}
                 <div class="column-chart__container">
                     <div data-element="header" class="column-chart__header">${value}</div>
