@@ -56,11 +56,7 @@ export default class SortableTable {
     compareString = (a, b, param) => {
         const compareString = (a, b) => a.localeCompare(b, ['ru', 'en'], {caseFirst: 'upper'});
     
-        if (param === 'desc') {
-            return compareString(b, a);
-        } else {
-            return compareString(a, b); 
-        }
+        return param === 'desc' ? compareString(b, a)  : compareString(a, b); 
     }
 
     sort(field, orderValue) {
@@ -97,14 +93,17 @@ export default class SortableTable {
 
     handleChangeSort = (event) => {
         const parent = event.target.closest('[data-sortable="true"]');
+        const orders = {
+            asc: 'desc',
+            desc: 'asc'
+        };
 
         if (parent) {
             const {id, order} = parent.dataset;
-            const orderValue = order === "asc" ? "desc" : "asc";
-            const data = this.sort(id, orderValue);
+            const data = this.sort(id, orders[order]);
             const arrow = parent.querySelector(".sortable-table__sort-arrow");
 
-            parent.dataset.order = orderValue;
+            parent.dataset.order = orders[order];
 
             if (!arrow) {
                 parent.append(this.subElements.arrow);

@@ -1,6 +1,12 @@
 class Tooltip {
+    static instance;
+
     constructor() {
-        // this.render();
+        if (Tooltip.instance) {
+            return Tooltip.instance;
+        }
+
+        Tooltip.instance = this;
     }
 
     handleMouseOver = event => {
@@ -8,7 +14,7 @@ class Tooltip {
 
         if (parent) {
             this.render(parent.dataset.tooltip);
-            document.addEventListener('pointerover', this.setPositionTooltip);
+            document.addEventListener('pointermove', this.setPositionTooltip);
         }        
     }
 
@@ -19,8 +25,9 @@ class Tooltip {
     }
 
     setPositionTooltip = event => {
-        this.element.style.left = `${event.clientX}px`;
-        this.element.style.top = `${event.clientY}px`;
+        const shift = 10;
+        this.element.style.left = `${event.clientX + shift}px`;
+        this.element.style.top = `${event.clientY + shift}px`;
     }
 
     initialize = () => {
@@ -40,14 +47,16 @@ class Tooltip {
     remove() {
         if (this.element) {
             this.element.remove();
-            document.addEventListener('pointerover', this.setPositionTooltip);
-            document.addEventListener("pointerover", this.handleMouseOver);
-            document.addEventListener("pointerout", this.handleMouseOut);
+            this.element = null;
+
+            document.removeEventListener('pointemove', this.setPositionTooltip);
         }
     }
     
     destroy() {
         this.remove();
+        document.removeEventListener("pointerover", this.handleMouseOver);
+        document.removeEventListener("pointerout", this.handleMouseOut);
     }
 }
 
