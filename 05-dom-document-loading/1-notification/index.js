@@ -8,7 +8,7 @@ export default class NotificationMessage {
         this.render();
     }
 
-    static notification = null;
+    static notification;
 
     getNotification() {
         const {duration, message, type, durationInSeconds} = this;

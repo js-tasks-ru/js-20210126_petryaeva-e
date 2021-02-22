@@ -62,22 +62,21 @@ export default class SortableTable {
         if (!sortable) return;
 
         const data = [...this.data].sort((a, b) => {
+            const value1 = a[field];
+            const value2 = b[field];
+
             switch (sortType) {
                 case 'string':
-                    return this.compareString(a[field], b[field], orderValue);
+                    return this.compareString(value1, value2, orderValue);
                 case 'number':
-                    return isDesc ? b[field] - a[field] : a[field] - b[field];
+                    return isDesc ? value2 - value1 : value1 - value2;
                 default:
-                    return isDesc ? b[field] - a[field] : a[field] - b[field];
+                    return isDesc ? value2 - value1 : value1 - value2;
             }
         });
 
         for (const child of this.subElements.header.children) {
-            if (child.dataset.id === column.id) {
-                child.dataset.order = orderValue;
-            } else {
-                child.dataset.order = '';
-            }
+            child.dataset.order = child.dataset.id === column.id ? orderValue : '';
         }
 
         this.subElements.body.innerHTML = this.getRows(data);
