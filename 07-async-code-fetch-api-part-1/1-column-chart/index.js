@@ -1,12 +1,55 @@
+import fetchJson from './utils/fetch-json.js';
+
+const REQUEST_URL = 'https://course-js.javascript.ru/';
+
 export default class ColumnChart {
-    constructor({data = [], label = '', link = '', value = 0, chartHeight = 50} = {}) {
-        this.data = data;
+    data = [];
+    subElements = {};
+
+    constructor({
+        url = '',
+        range = {
+            from: new Date(),
+            to: new Date(),
+        },
+        label = '',
+        link = '',
+        chartHeight = 50,
+        formatHeading = data => data,
+    } = {}) {
+        this.url = new URL(this.url, REQUEST_URL);
+        this.range = range;
         this.label = label;
         this.link = link;
-        this.value = value;
         this.chartHeight = chartHeight;
+        this.formatHeading = formatHeading;
 
         this.render();
+    }
+
+    getUrl(from, to) {
+        this.url.searchParams.set('from', from.toISOString());
+        this.url.searchParams.set('to', to.toISOString());
+    }
+
+    async getDataRequest(from, to) {
+        this.element.classList.add('column-chart_loading');
+        this.subElements.header.textContent = '';
+        this.subElements.body.innerHTML = '';
+
+        this.getUrl(from, to);
+
+        const response = await fetchJson(this.url);
+        const data = Object.values(response);
+
+        this.range = {from, to};
+
+        if (response && data.length) {
+            this.subElements.header.innerHTML = this.getHeaderTotalValue(data);
+            this.subElements.body.innerHTML = this.getBody(data);
+
+            this.element.classList.remove('column-chart_loading');
+        }
     }
 
     getTitle(label, link) {
@@ -20,7 +63,7 @@ export default class ColumnChart {
 
     getColumnProps(data) {
         const maxValue = Math.max(...data);
-        const scale = 50 / maxValue;s
+        const scale = 50 / maxValue;
 
         return data.map(item => {
             return {
@@ -31,36 +74,47 @@ export default class ColumnChart {
     }
 
     getBody(data) {
-        return `
-            <div data-element="body" class="column-chart__chart">
-                ${this.getColumnProps(data).map(item => {
-                    return `<div style="--value: ${item.value}" data-tooltip="${item.percent}"></div>`
-                }).join('')}
-            </div>
-        `;
+        return this.getColumnProps(data).map(item => {
+            return `<div style="--value: ${item.value}" data-tooltip="${item.percent}"></div>`
+        }).join('');
     }
 
-    render() {
-        const {data, label, link, value, chartHeight} = this;
-        const loadingClass = data.length ? '' : 'column-chart_loading';
-        const element = document.createElement('div');
+    getHeaderTotalValue = data => data.length ? this.formatHeading([...data].reduce((sum, item) => sum + item)) : '';
 
+    render() {
+        const {range, label, link, chartHeight} = this;
+
+        const element = document.createElement('div');
+        
         element.innerHTML = `
-            <div class="column-chart ${loadingClass}" style="--chart-height: ${chartHeight}">
+            <div class="column-chart column-chart_loading" style="--chart-height: ${chartHeight}">
                 ${this.getTitle(label, link)}
                 <div class="column-chart__container">
-                    <div data-element="header" class="column-chart__header">${value}</div>
-                    ${!!data.length ? this.getBody(data) : ''}
+                    <div data-element="header" class="column-chart__header"></div>
+                    <div data-element="body" class="column-chart__chart"></div>
                 </div>
             </div>
         `;
     
         this.element = element.firstElementChild;
+
+        this.subElements = this.getSubElements(this.element);
+
+        this.getDataRequest(range.from, range.to);
     }
 
-    update(data = []) {
-        this.data = data;
-        this.render();
+    getSubElements(element) {
+        const elements = element.querySelectorAll('[data-element]');
+    
+        return [...elements].reduce((memo, item) => {
+            memo[item.dataset.element] = item;
+    
+            return memo;
+        }, {});
+    }
+
+    async update(from, to) {
+        return await this.getDataRequest(from, to);
     }
 
     remove() {

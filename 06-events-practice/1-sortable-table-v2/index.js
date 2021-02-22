@@ -7,7 +7,7 @@ export default class SortableTable {
         this.render();
     }
 
-    getHeader = (data) => {
+    getHeader(data) {
         return `
             <div data-element="header" class="sortable-table__header sortable-table__row">
                 ${data.map(({id, title, sortable}) => {
@@ -53,10 +53,10 @@ export default class SortableTable {
         : `<div class="sortable-table__cell">${row[id]}</div>`
     ).join('');
 
-    compareString = (a, b, param) => {
-        const compareString = (a, b) => a.localeCompare(b, ['ru', 'en'], {caseFirst: 'upper'});
+    compareString = (value1, value2, param) => {
+        const compareString = (str1, str2) => str1.localeCompare(str2, ['ru', 'en'], {caseFirst: 'upper'});
     
-        return param === 'desc' ? compareString(b, a)  : compareString(a, b); 
+        return param === 'desc' ? compareString(value2, value1)  : compareString(value1, value2); 
     }
 
     sort(field, orderValue) {
