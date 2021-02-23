@@ -1,6 +1,6 @@
 import fetchJson from './utils/fetch-json.js';
 
-const REQUEST_URL = 'https://course-js.javascript.ru/';
+const REQUEST_URL = 'https://course-js.javascript.ru';
 
 export default class ColumnChart {
     data = [];
@@ -17,7 +17,7 @@ export default class ColumnChart {
         chartHeight = 50,
         formatHeading = data => data,
     } = {}) {
-        this.url = new URL(this.url, REQUEST_URL);
+        this.url = new URL(url, REQUEST_URL);
         this.range = range;
         this.label = label;
         this.link = link;
