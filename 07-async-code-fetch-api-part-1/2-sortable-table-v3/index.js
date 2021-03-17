@@ -38,7 +38,6 @@ export default class SortableTable {
         const data = await fetchJson(this.url);
 
         if (data) {
-            // this.subElements.body.innerHTML = this.getRows(data);
             this.element.classList.remove('sortable-table_loading');
             this.element.classList.remove("sortable-table_empty");
 
